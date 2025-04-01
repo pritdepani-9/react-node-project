@@ -10,5 +10,3 @@ build/
 .DS_Store
 Thumbs.db
 
-# Environment files (don't push secrets)
-.env
