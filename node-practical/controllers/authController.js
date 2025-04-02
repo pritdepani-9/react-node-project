@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import User from "../models/user.js";
 import Verification from "../models/verification.js";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -11,16 +12,19 @@ export const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.findOne({ where: { email } });
-        if (user) return res.status(400).json({ message: "User already exists" });
+        console.log('user23: ', user);
+        if (user) {return res.status(400).json({ message: "User already exists" });}
 
         const newUser = await User.create({ first_name, last_name, email, password_hash: hashedPassword });
+        console.log('newUser: ', newUser);
 
-        const otp = "123456";
-        const expires_Time = new Date(Date.now() + 10000 * 60 * 5);
+        const otp = crypto.randomInt(100000, 999999).toString();
+        console.log('otp: ', otp);
+        const expires_at = new Date(Date.now() + 1000 * 60 * 5); // 5 minutes expiry
 
-        await Verification.create({ user_id: newUser.id, verification_code: otp, expires_Time });
+        await Verification.create({ user_id: newUser.id, verification_code: otp, expires_at });
 
-        res.status(201).json({ message: "User created successfully" });
+        res.status(201).json({ message: "User created successfully", otp });
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
     }

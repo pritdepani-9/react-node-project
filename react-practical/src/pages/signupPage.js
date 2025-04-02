@@ -33,13 +33,14 @@ function Signup() {
 
         if (response.status === 201) {
             localStorage.setItem('userEmail', formData.email);
+            localStorage.setItem('userOtp', response?.data?.otp);
 
        
             toast.success(response.data.message);
 
   
             setTimeout(() => {
-                alert('your otp is 123456');  
+                alert(`your otp is ${response?.data?.otp}`);  
                 navigate('/otp-verification');
             }, 2000);
         }
